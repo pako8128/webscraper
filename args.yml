@@ -3,7 +3,7 @@ version: "v0.1.0"
 author: PaKo <pako8128@protonmail.com>
 about: this is a super simple async webscraper written in Rust
 args:
-    - URL:
+    - URLS:
         help: The resource to get
         multiple: true
         index: 1
