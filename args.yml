@@ -7,3 +7,9 @@ args:
         help: The resource to get
         multiple: true
         index: 1
+    - output:
+        short: o
+        long: output
+        help: sets the output directory
+        takes_value: true
+        value_name: DIR
