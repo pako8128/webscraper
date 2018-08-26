@@ -6,7 +6,8 @@ extern crate futures;
 use clap::App;
 
 use hyper::Client;
-use hyper::rt; // hyper re-exposes the traits from future crate
+use hyper::rt;
+use hyper::client::HttpConnector;
 
 use futures::{stream, Future, Stream};
 
@@ -31,13 +32,13 @@ fn main() {
 }
 
 fn fetch_urls(urls: Vec<hyper::Uri>) -> impl Future<Item=(), Error = ()> {
+    let client = Client::new();
+
     stream::iter_ok(urls)
-        .for_each(|url| fetch_url(url))
+        .for_each(move |url| fetch_url(url, &client))
 }
 
-fn fetch_url(url: hyper::Uri) -> impl Future<Item = (), Error = ()> {
-    let client = Client::new();
-        
+fn fetch_url(url: hyper::Uri, client: &Client<HttpConnector>) -> impl Future<Item = (), Error = ()> {
     client
         .get(url)
         .and_then(|res| {
