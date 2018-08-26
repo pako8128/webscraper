@@ -2,6 +2,7 @@
 extern crate clap;
 extern crate hyper;
 extern crate futures;
+extern crate tokio;
 
 use clap::App;
 
@@ -11,7 +12,8 @@ use hyper::client::HttpConnector;
 
 use futures::{stream, Future, Stream};
 
-use std::io::prelude::*;
+use tokio::prelude::*;
+
 use std::path::PathBuf;
 use std::fs::{File, DirBuilder};
 
