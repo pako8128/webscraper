@@ -5,4 +5,5 @@ about: this is a super simple async webscraper written in Rust
 args:
     - URL:
         help: The resource to get
+        multiple: true
         index: 1
