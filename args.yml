@@ -1,0 +1,8 @@
+name: webscraper
+version: "v0.1.0"
+author: PaKo <pako8128@protonmail.com>
+about: this is a super simple async webscraper written in Rust
+args:
+    - URL:
+        help: The resource to get
+        index: 1

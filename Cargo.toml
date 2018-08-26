@@ -1,0 +1,8 @@
+[package]
+name = "webscraper"
+version = "0.1.0"
+authors = ["PaKo <pako8128@protonmail.com>"]
+
+[dependencies]
+clap = { version = "2", features = ["yaml"] }
+hyper = "0.12"
