@@ -52,7 +52,7 @@ fn fetch_urls(urls: Vec<hyper::Uri>, output_dir: PathBuf) -> impl Future<Item=()
             if output_dir.is_dir() {
                 output_dir.push("index.html");
             }
-            println!("output_dir: {:?}", output_dir);
+            println!("{}", url);
             let output = File::create(output_dir).unwrap();
             fetch_url(url, &client, output)
         })
