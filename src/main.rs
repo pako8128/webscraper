@@ -16,16 +16,39 @@ use tokio::prelude::*;
 
 use std::path::PathBuf;
 use std::fs::{File, DirBuilder};
+use std::process;
+use std::io::BufReader;
 
 fn main() {
 	// parse the command line arguments
 	let yaml = load_yaml!("../args.yml");
 	let matches = App::from_yaml(yaml).get_matches();
+
+    let mut urls = Vec::new();
+
+    if let Some(url_file) = matches.value_of("url-list") {
+        use std::io::BufRead;
+        
+        let file = BufReader::new(File::open(&url_file).unwrap());
+        for url in file.lines() {
+            let url = url.unwrap();
+            urls.push(url.parse().unwrap());
+        }
+    }
 	
-	let urls = match matches.values_of("URLS") {
-	    Some(urls) => urls.collect(),
-	    None => vec!["http://example.com"],
-	};
+	match matches.values_of("URLS") {
+	    Some(u) => {
+	        for url in u {
+	            urls.push(url.parse().unwrap());
+    	    }
+	    },
+	    None => {
+	        if urls.is_empty() {
+	            println!("{}", matches.usage());
+	            process::exit(1);
+	        }
+	    },
+	}
 
     let output_dir = match matches.value_of("output") {
         Some(path) => PathBuf::from(path),
@@ -37,8 +60,6 @@ fn main() {
         DirBuilder::new().recursive(true).create(&output_dir).unwrap();
     }
     
-	let urls = urls.into_iter().map(|url| url.parse().unwrap()).collect();
-   
 	// using the tokio runtime
 	rt::run(fetch_urls(urls, output_dir));
 }
@@ -46,11 +67,11 @@ fn main() {
 fn fetch_urls(urls: Vec<hyper::Uri>, output_dir: PathBuf) -> impl Future<Item=(), Error = ()> {
     let client = Client::new();
 
-    stream::iter_ok(urls)
-        .for_each(move |url| {
+    stream::iter_ok(urls.into_iter().enumerate())
+        .for_each(move |(i,url)| {
             let mut output_dir = output_dir.join(url.path().split('/').last().unwrap());
             if output_dir.is_dir() {
-                output_dir.push("index.html");
+                output_dir.push(format!("index.html.{}", i));
             }
             println!("{}", url);
             let output = File::create(output_dir).unwrap();

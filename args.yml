@@ -10,6 +10,12 @@ args:
     - output:
         short: o
         long: output
-        help: sets the output directory
         takes_value: true
         value_name: DIR
+        help: sets the output directory
+    - url-list:
+        short: l
+        long: list
+        takes_value: true
+        value_name: FILE
+        help: a list of URLs (one per line) to download
