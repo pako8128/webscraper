@@ -16,6 +16,7 @@ use tokio::prelude::*;
 
 use std::path::PathBuf;
 use std::fs::{File, DirBuilder};
+use std::process;
 
 fn main() {
 	// parse the command line arguments
@@ -23,8 +24,11 @@ fn main() {
 	let matches = App::from_yaml(yaml).get_matches();
 	
 	let urls = match matches.values_of("URLS") {
-	    Some(urls) => urls.collect(),
-	    None => vec!["http://example.com"],
+	    Some(urls) => urls.map(|url| url.parse().unwrap()).collect(),
+	    None => {
+	        println!("{}", matches.usage());
+	        process::exit(1);
+	    },
 	};
 
     let output_dir = match matches.value_of("output") {
@@ -37,8 +41,6 @@ fn main() {
         DirBuilder::new().recursive(true).create(&output_dir).unwrap();
     }
     
-	let urls = urls.into_iter().map(|url| url.parse().unwrap()).collect();
-   
 	// using the tokio runtime
 	rt::run(fetch_urls(urls, output_dir));
 }
